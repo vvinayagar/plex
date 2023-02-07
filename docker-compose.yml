@@ -1,0 +1,12 @@
+version: '3'
+services:
+  plex:
+    image: plex
+    ports:
+      - 32400:32400
+    volumes:
+      - /mnt/d/Videos:/media
+      - /mnt/d:/config
+    environment:
+      - TZ=MY
+    restart: unless-stopped

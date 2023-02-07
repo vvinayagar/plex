@@ -1,0 +1,20 @@
+FROM ubuntu:22.04
+# Create the plex user with the UID 1000
+#RUN useradd -u 1000 plex
+
+# Add the plex user to the sudo group
+#RUN usermod -aG sudo plex
+
+RUN apt update -y
+RUN apt upgrade -y
+RUN apt update -y
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    libc6-dev
+RUN curl https://downloads.plex.tv/plex-keys/PlexSign.key | apt-key add -
+RUN echo deb https://downloads.plex.tv/repo/deb public main | tee /etc/apt/sources.list.d/plexmediaserver.list
+RUN apt update
+RUN apt install plexmediaserver
+#RUN mkdir -p /opt/plexmedia/{movies,series}
+#RUN chown -R plex: /opt/plexmedia

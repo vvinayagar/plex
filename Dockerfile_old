@@ -1,0 +1,65 @@
+
+FROM ubuntu:22.04
+
+# Update the package list and install required dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    lsb-release \
+    adduser
+
+# Add the Plex repository key
+RUN wget https://downloads.plex.tv/plex-keys/PlexSign.key && \
+    apt-key add PlexSign.key
+
+# Add the Plex repository
+RUN echo "deb https://downloads.plex.tv/repo/deb public main" | \
+    tee /etc/apt/sources.list.d/plexmediaserver.list
+
+# Update the package list and install Plex Media Server
+RUN apt-get update && apt-get install -y plexmediaserver net-tools
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the local directory to the container
+COPY . .
+
+
+# Create a new group named plex
+#RUN groupadd plex
+
+# Create a new user named plex and add it to the plex group
+# RUN useradd -d /home/plex -s /bin/bash plex
+
+# Set the environment variable for the time zone to Malaysia
+ENV TZ=Asia/Kuala_Lumpur
+
+# # Set the working directory to /config
+# WORKDIR /config
+
+# # Change the owner of the /config directory to the plex user
+# RUN chown -R plex:plex /config
+
+# # Switch to the plex user
+
+
+# # Create the /home/plex directory
+# RUN mkdir /home/plex  && chown -R plex:plex /home/plex
+# RUN mkdir /home/plex/Library  && chown -R plex:plex /home/plex/Library
+# RUN chown -R plex:plex /home/plex/Library
+COPY ./plex.sh /home/plex/plex.sh
+
+# RUN chmod +x /home/plex/plex.sh
+# #RUN echo "plex:plexpassword" | chpasswd
+# USER plex
+# # Expose the default Plex port
+# EXPOSE 32400
+
+# RUN ifconfig
+#CMD ["/usr/sbin/plexmediaserver"]
+#RUN /usr/lib/plexmediaserver/lib/plexmediaserver.init start
+#RUN /usr/lib/plexmediaserver/lib/plexmediaserver.init start 
+#CMD /usr/lib/plexmediaserver/lib/plexmediaserver.init status
+#CMD /usr/lib/plexmediaserver/lib/plexmediaserver.init status
+CMD ["/bin/sh", "-c", "/home/plex/plex.sh"]
